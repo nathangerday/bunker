@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import axml  # noqa: E402
 import build_info  # noqa: E402
 import notice_pack  # noqa: E402
+import privacy  # noqa: E402
 from axml import Attr, Element  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -89,7 +90,7 @@ def patch_game_files(lib, metadata, port_offset=0):
         grpc, http = addresses(port_offset)
         run_cli(load("patch_apk", SCRIPTS / "android/patch_apk.py"), work, "--grpc-addr", grpc, "--http-addr", http)
         load("package_game", ROOT / "android/tools/package_game.py").patch_local_reachability(work)
-        return (work / LIB).read_bytes(), (work / METADATA).read_bytes()
+        return privacy.patch_library((work / LIB).read_bytes()), (work / METADATA).read_bytes()
 
 
 def patch_master(original):
@@ -142,6 +143,7 @@ def patch_manifest(game_manifest, companion_manifest, port_offset=0):
             if source.name == "provider":  # Authorities are unique per device: use the game's.
                 source.set(Attr.string("authorities", PACKAGE + ".lunar_loopback", AUTHORITIES))
             app.children.append(source)
+    privacy.harden_manifest(manifest)
     return axml.serialize(doc), game_activity
 
 
@@ -210,7 +212,7 @@ class ApkWriter:
 def assemble(apk, master, companion_apk, output, log=print, port_offset=0, notices=None):
     with zipfile.ZipFile(apk) as game, zipfile.ZipFile(companion_apk) as companion, open(apk, "rb") as raw:
         names = set(game.namelist())
-        for required in ("AndroidManifest.xml", LIB, METADATA, "resources.arsc"):
+        for required in ("AndroidManifest.xml", LIB, METADATA, "resources.arsc", privacy.UNITY_SETTINGS):
             if required not in names:
                 raise RuntimeError(f"Not the ARM64 game APK: {required} is missing")
         log("Patching the game library and metadata…")
@@ -220,7 +222,8 @@ def assemble(apk, master, companion_apk, output, log=print, port_offset=0, notic
         log("Patching master data…")
         original_master = Path(master).read_bytes()
         patched_master = patch_master(original_master)
-        replaced = {"AndroidManifest.xml": manifest, LIB: lib, METADATA: metadata}
+        replaced = {"AndroidManifest.xml": manifest, LIB: lib, METADATA: metadata,
+                    privacy.UNITY_SETTINGS: privacy.patch_unity_settings(game.read(privacy.UNITY_SETTINGS))}
         dex = [n for n in names if re.fullmatch(r"classes\d*\.dex", n)]
         next_dex = max(int(n[7:-4] or 1) for n in dex) + 1
         temporary = Path(str(output) + ".partial")

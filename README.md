@@ -1,3 +1,5 @@
+Android telemetry changes: [scope, build and update notes](docs/PRIVACY.md).
+
 ## AI usage disclosure
 
 This is a **personal hobby project** built with extensive AI assistance from OpenAI Codex and Anthropic Claude for coding, integration, testing, and documentation. It is an unofficial, experimental project, not an official game release.
