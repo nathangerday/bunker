@@ -33,10 +33,12 @@ launcher, use compatible fork releases, or integrate these changes upstream.
 
 ## Validation
 
-The retained native sites and the two Unity settings bytes are checked against
-the original APK; tests also check manifest round trips, idempotence, unknown
-binary rejection, compatible update packaging and untouched messaging/ad code.
-Connected runtime verification is being repeated after the trim. The earlier
-build reached the title screen and contacted GitHub with Internet enabled, but
-that does not prove this smaller patch's behavior. Facebook Graph traffic was
-not classified; this is not a guarantee that every SDK connection is absent.
+42 focused tests passed, covering original-file guards, manifest round trips,
+idempotence, compatible update packaging and untouched messaging/ad code.
+Android build/lint passed on the separate emulator test branch (run 40131982518).
+The rebuilt APK was verified to contain the 10 patches with the 47 removed sites
+restored. A 90-second connected startup reached the existing profile's title
+screen and contacted GitHub; Firebase reported analytics deactivated and Adjust
+reported uninitialized. No Unity analytics DNS queries or new startup exceptions
+were observed. This short test does not cover every game path; Facebook Graph
+traffic remains unclassified. There is no claim that every SDK connection is absent.
