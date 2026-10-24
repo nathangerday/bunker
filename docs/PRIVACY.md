@@ -44,6 +44,13 @@ blocking, use the supplied helper with a root-enabled Android emulator. An
 Android 11 Google APIs x86_64 image is a suitable test target: it supports ARM64
 translation and adb root. A Google Play production image does not provide adb root.
 
+The native server build uses a checked Go 1.25.8 source overlay to skip the
+optional Neoverse CPU-identification probe on Android. The API 30 ARM translator
+advertises CPUID support but crashes on the MIDR register read. This overlay
+selects Go's generic performance path and leaves the installed toolchain intact.
+Other ARM capability checks remain enabled. A different Go version or source
+fingerprint requires review before building.
+
 After installing the hardened APK, list devices and select the intended emulator:
 
 ```powershell

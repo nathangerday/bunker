@@ -7,6 +7,7 @@ case "$(uname -s)" in Darwin) host_tag=darwin-x86_64;; Linux) host_tag=linux-x86
 export CC="$ndk_dir/toolchains/llvm/prebuilt/$host_tag/bin/aarch64-linux-android26-clang"
 version="$(python3 "$root_dir/scripts/version.py")"
 export GOOS=android GOARCH=arm64 CGO_ENABLED=1
+cpu_overlay="$(python3 "$root_dir/android/tools/go_cpu_overlay.py")"
 cd "$root_dir/server"
 test -f gen/proto/user.pb.go || { echo "Generate protobuf first: cd server && make proto" >&2; exit 1; }
 mkdir -p ../android/app/src/main/jniLibs/arm64-v8a
@@ -20,7 +21,7 @@ cp ../android/tools/apk_sign.py ../android/tools/assemble_apk.py ../android/tool
 cp ../android/tools/privacy.py ../android/tools/telemetry_patches.json ../android/app/src/main/python/bunker_tools/
 : > ../android/app/src/main/python/bunker_tools/__init__.py
 cp ../web/signing/bunker-key.pem ../web/signing/bunker-cert.der ../android/app/src/main/assets/lunar/signing/
-go build -buildmode=c-shared -trimpath -ldflags="-s -w -X lunar-tear/server/internal/bunkerversion.Version=$version -extldflags=-Wl,-z,max-page-size=16384,-z,common-page-size=16384" \
+go build -overlay="$cpu_overlay" -buildmode=c-shared -trimpath -ldflags="-s -w -X lunar-tear/server/internal/bunkerversion.Version=$version -extldflags=-Wl,-z,max-page-size=16384,-z,common-page-size=16384" \
   -o ../android/app/src/main/jniLibs/arm64-v8a/liblunar.so ./cmd/android-bridge
 # Frame rate and resolution choices, applied in the game's process (DisplayPatch.java).
 "$CC" -shared -fPIC -O2 -Wall -Wextra -Werror -s -Wl,-z,max-page-size=16384,-z,common-page-size=16384 \
