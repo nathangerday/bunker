@@ -2,7 +2,7 @@ name: Privacy Android validation
 
 on:
   push:
-    branches: [privacy/disable-telemetry]
+    branches: [privacy/disable-telemetry, test/privacy-emulator]
   workflow_dispatch:
 
 permissions:
@@ -12,6 +12,8 @@ jobs:
   android:
     runs-on: ubuntu-latest
     timeout-minutes: 35
+    env:
+      BUNKER_PORTABLE_ARM64: "1"
     steps:
       - uses: actions/checkout@v4
         with:
