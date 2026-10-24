@@ -60,6 +60,18 @@
       "rva": 66986716,
       "original": "f44fbea9fd7b01a9fd430091b4cd01d0",
       "replacement": "c0035fd6"
+    },
+    {
+      "name": "IronSource initialization",
+      "rva": 53026340,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "IronSource initialization with ad units",
+      "rva": 53026536,
+      "original": "f657bda9f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
     }
   ]
 }

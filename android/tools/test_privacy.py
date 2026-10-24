@@ -138,7 +138,7 @@ class PrivacyTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "Unsupported game data"):
             privacy.patch_unity_settings(b"another game's settings")
 
-    def test_real_game_settings_messaging_and_ads_boundary(self):
+    def test_real_game_settings_messaging_and_rewards_boundary(self):
         apk = Path(__file__).resolve().parents[2] / "inputs/game-3.7.1.apk"
         if not apk.is_file():
             self.skipTest("requires the user's original APK")
@@ -155,11 +155,11 @@ class PrivacyTests(unittest.TestCase):
             library = archive.read("lib/arm64-v8a/libil2cpp.so")
             patched = privacy.patch_library(library)
             segments = privacy._segments(library)
-            # Messaging, ad display and IronSource initialization/availability
+            # Messaging, ad display and IronSource availability/reward callbacks
             # retain the original game's instructions.
             for rva in (0x53C8CD4, 0x53C9600, 0x53C903C, 0x53C9110,
                         53027100, 53027280, 53028000, 53027640,
-                        53026340, 53026536, 53026144, 53025940, 53026920, 53025564):
+                        53026144, 53025940, 53026920, 53025564):
                 offset = next(file + rva - address for file, address, size in segments
                               if address <= rva < address + size)
                 self.assertEqual(patched[offset:offset + 16], library[offset:offset + 16])
