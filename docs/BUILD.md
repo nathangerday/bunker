@@ -210,3 +210,12 @@ The small asset-preparation safety checks need no game files:
 ```sh
 python3 -m unittest discover -s scripts -p 'test_*.py'
 ```
+
+## ARM translation on x86 emulators
+
+The Android 11 Google APIs ARM translator advertises CPU features it cannot
+execute. For this emulator only, build the native server with
+`BUNKER_PORTABLE_ARM64=1 android/tools/build_native.sh` before assembling the
+launcher. This checked Go 1.25.8 overlay uses portable CPU paths and does not
+modify the installed toolchain. Normal builds keep their CPU optimizations.
+The launcher applies its later GODEBUG override only on x86 Android hosts.
