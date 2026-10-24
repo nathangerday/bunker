@@ -13,13 +13,12 @@ import xml.etree.ElementTree as ET
 import axml
 from axml import Attr, Element
 
-POLICY_VERSION = 3
 PATCH_FILE = Path(__file__).with_name("telemetry_patches.json")
 SITES = json.loads(PATCH_FILE.read_text(encoding="utf-8"))["sites"]
 
 # Firebase's permanent deactivation takes precedence over runtime consent.
-# Other flags disable startup/default collection; checked native patches below
-# additionally suppress the calls which could override them or report events.
+# Other flags disable automatic collection. The few native patches below
+# stop SDK startup or explicit event/reporting calls.
 COLLECTION_FLAGS = {
     "firebase_analytics_collection_deactivated": True,
     "firebase_analytics_collection_enabled": False,

@@ -275,7 +275,7 @@ def update(installed_apk, companion_apk, output, log=print, notices=None):
         if "assets/lunar/build.json" not in names or "assets/lunar/game-manifest.xml" not in names:
             raise RuntimeError("This update needs the web builder: this build is older than Bunker 1.0.0")
         old = json.loads(game.read("assets/lunar/build.json"))
-        if old.get("gamePatch") != build_info.GAME_PATCH or old.get("privacyPolicy") != privacy.POLICY_VERSION:
+        if old.get("gamePatch") != build_info.GAME_PATCH:
             raise RuntimeError("This update needs the web builder: it changes how the game itself is patched")
         log("Updating the manifest…")
         manifest, _ = patch_manifest(game.read("assets/lunar/game-manifest.xml"), companion.read("AndroidManifest.xml"),

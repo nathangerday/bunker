@@ -8,7 +8,6 @@ import zipfile
 
 import assemble_apk
 import build_info
-import privacy
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME_APK = ROOT / "inputs/game-3.7.1.apk"
@@ -31,7 +30,7 @@ class UpdateTests(unittest.TestCase):
         self.game_manifest, self.companion_manifest = manifests()
 
     def installed(self, **info_changes):
-        info = {"version": "1.0.0", "gamePatch": build_info.GAME_PATCH, "privacyPolicy": privacy.POLICY_VERSION, "portOffset": 0, "gameDex": 1,
+        info = {"version": "1.0.0", "gamePatch": build_info.GAME_PATCH, "portOffset": 0, "gameDex": 1,
                 "bunkerLibs": ["lib/arm64-v8a/liblunar.so", "lib/arm64-v8a/libold.so"]}
         info.update(info_changes)
         path = self.work / "installed.apk"
@@ -132,11 +131,6 @@ class UpdateTests(unittest.TestCase):
     def test_game_patch_change_needs_web_builder(self):
         with self.assertRaisesRegex(RuntimeError, "web builder"):
             assemble_apk.update(self.installed(gamePatch=build_info.GAME_PATCH + 1), self.companion(),
-                                self.work / "out.apk", log=lambda m: None)
-
-    def test_missing_privacy_policy_cannot_be_labelled_hardened_by_update(self):
-        with self.assertRaisesRegex(RuntimeError, "web builder"):
-            assemble_apk.update(self.installed(privacyPolicy=None), self.companion(),
                                 self.work / "out.apk", log=lambda m: None)
 
 

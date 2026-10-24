@@ -1,7 +1,4 @@
-> Android privacy fork: targeted analytics and advertising tracker suppression.
-> Updates and notifications retain their upstream behavior. See [the privacy guide](docs/PRIVACY.md).
-> Upstream project: [veritr1x/bunker](https://github.com/veritr1x/bunker).
-> The upstream hosted builder does not include these changes.
+Android telemetry changes: [scope, build and update notes](docs/PRIVACY.md).
 
 ## AI usage disclosure
 
@@ -71,10 +68,9 @@ Light or dark follows the phone, or choose one in ⋮ → Display. Screenshots a
 
 ## Build in your browser
 
-For this Android privacy fork, follow [the privacy build guide](docs/PRIVACY.md).
-Its changes are not deployed to the upstream hosted builder. The original
-[upstream web builder](https://veritr1x.github.io/bunker/) supports Android and
-iPhone/iPad and processes files in the browser, but produces the upstream build.
+**[Open the web builder](https://veritr1x.github.io/bunker/)**: pick Android or
+iPhone/iPad, choose your own game file and master data, and download the offline app. Everything
+runs in your browser; your files are never uploaded. No tools to install.
 
 Limitations:
 
@@ -217,7 +213,7 @@ uv python install 3.13
 ### 3. Get the code
 
 ```sh
-git clone --recurse-submodules --branch privacy/disable-telemetry https://github.com/nathangerday/bunker.git
+git clone --recurse-submodules https://github.com/veritr1x/bunker.git
 cd bunker
 ```
 

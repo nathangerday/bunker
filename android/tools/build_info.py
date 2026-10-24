@@ -8,11 +8,10 @@ The notices (assets/notices/, notice_pack.py) stay unless the update brings a
 new pack; build.json's "notices" names the pack the APK carries.
 """
 import re
-from privacy import POLICY_VERSION
 
 # Bump when a release changes how the game itself is patched (its library,
 # metadata, master data or manifest edits): such an update needs the web builder.
-GAME_PATCH = 4
+GAME_PATCH = 2
 VERSION_ENTRY = "assets/lunar/bunker-version.txt"
 
 
@@ -20,7 +19,7 @@ def describe(companion, game_dex, port_offset, notices=None):
     """build.json for an APK made from the companion (launcher) APK; notices is the notice pack's sha256."""
     names = companion.namelist()
     version = companion.read(VERSION_ENTRY).decode().strip() if VERSION_ENTRY in names else "dev"
-    info = {"version": version, "gamePatch": GAME_PATCH, "privacyPolicy": POLICY_VERSION, "portOffset": int(port_offset), "gameDex": int(game_dex),
+    info = {"version": version, "gamePatch": GAME_PATCH, "portOffset": int(port_offset), "gameDex": int(game_dex),
             "bunkerLibs": sorted(n for n in names if n.startswith("lib/arm64-v8a/"))}
     if notices:
         info["notices"] = notices
