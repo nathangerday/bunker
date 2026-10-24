@@ -7,6 +7,7 @@ Rules are runtime state: reapply after an emulator reboot or app reinstall.
 """
 import argparse
 import json
+from pathlib import Path
 import re
 import shlex
 import shutil
@@ -143,11 +144,11 @@ def main():
     adb = shutil.which(args.adb)
     if not adb:
         parser.error("adb was not found")
-    device = Device(adb, args.serial)
+    device = Device(str(Path(adb).resolve()), args.serial)
     try:
         device.require_root()
         result = run(device, device.uid(), args.action)
-    except (ValueError, RuntimeError, subprocess.TimeoutExpired) as error:
+    except (OSError, ValueError, RuntimeError, subprocess.TimeoutExpired) as error:
         parser.exit(1, str(error) + "\nProtection was not established. Keep the emulator offline until this is resolved.\n")
     print(json.dumps(result, indent=2))
     if args.action == "status" and not result["protected"]:
