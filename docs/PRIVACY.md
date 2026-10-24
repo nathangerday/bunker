@@ -44,15 +44,15 @@ blocking, use the supplied helper with a root-enabled Android emulator. An
 Android 11 Google APIs x86_64 image is a suitable test target: it supports ARM64
 translation and adb root. A Google Play production image does not provide adb root.
 
-The native server build uses a checked Go 1.25.8 source overlay to skip the
-optional Neoverse CPU-identification probe on Android. The API 30 ARM translator
-advertises CPUID support but crashes on the MIDR register read. This overlay
-selects Go's generic performance path and leaves the installed toolchain intact.
-The same translator advertises AES instructions it cannot execute. On x86
-emulators the launcher sets Go's documented `GODEBUG=cpu.all=off` before loading
-the server library, selecting portable implementations. Real ARM devices retain
-the other capability optimizations. A different Go version or source fingerprint
-requires review before building.
+The native server build uses a checked Go 1.25.8 source overlay to select its
+portable CPU paths on Android. The API 30 ARM translator advertises CPUID and AES
+support but crashes on the MIDR register read and AESE instruction. Android does
+not support Go's early GODEBUG CPU override, so this is handled at build time,
+before runtime hash initialization. This also sacrifices optional Go CPU
+optimizations on real ARM devices. On x86 emulators the launcher additionally
+sets `GODEBUG=cpu.all=off` for third-party CPU detection during later package
+initialization. The installed Go toolchain stays intact. A different Go version
+or source fingerprint requires review before building.
 
 After installing the hardened APK, list devices and select the intended emulator:
 

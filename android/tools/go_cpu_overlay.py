@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Avoid Go's optional MIDR probe on Android ARM translators.
+"""Use portable Go CPU paths for this Android emulator build.
 
 The API 30 Google ARM64 translator advertises HWCAP_CPUID but raises SIGILL on
-MRS MIDR_EL1. Go uses that register only to select a Neoverse performance path.
-Keep the other capability checks and use the generic path on Android. A Go
+MRS MIDR_EL1 and AESE. Android does not support Go's early GODEBUG CPU override,
+so select the generic paths before runtime hash initialization. This sacrifices
+optional Go CPU optimizations on Android, including real ARM devices. A Go
 overlay leaves the installed toolchain untouched; review when updating Go.
 """
 import hashlib
@@ -23,13 +24,13 @@ def main():
     original = source.read_bytes()
     if hashlib.sha256(original).hexdigest() != EXPECTED:
         raise RuntimeError("Go CPU source changed; refusing an unchecked overlay")
-    needle = b"if ARM64.HasCPUID {"
+    needle = b"func hwcapInit(os string) {"
     if original.count(needle) != 1:
-        raise RuntimeError("Expected one MIDR capability guard")
+        raise RuntimeError("Expected one ARM64 feature initializer")
     directory = Path(__file__).resolve().parents[2] / ".build/android-go"
     directory.mkdir(parents=True, exist_ok=True)
     patched = directory / source.name
-    patched.write_bytes(original.replace(needle, b'if ARM64.HasCPUID && os != "android" {'))
+    patched.write_bytes(original.replace(needle, needle + b'\n\tif os == "android" {\n\t\treturn\n\t}'))
     overlay = directory / "overlay.json"
     overlay.write_text(json.dumps({"Replace": {str(source): str(patched)}}), encoding="utf-8")
     print(overlay)

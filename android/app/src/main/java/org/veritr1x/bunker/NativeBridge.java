@@ -2,10 +2,10 @@ package org.veritr1x.bunker;
 
 public final class NativeBridge {
     static {
-        // API 30's ARM translator also advertises AES instructions it cannot
-        // execute. Keep Go on its portable paths in x86 emulator processes.
-        // This must precede dlopen: Go's CPU and random-seed initialization run
-        // while the shared library is loaded. Real ARM devices keep their flags.
+        // Disable optional instructions for third-party Go CPU detection too
+        // (golang.org/x/sys/cpu reads GODEBUG during package initialization).
+        // The Go runtime itself needs the build overlay: Android ignores CPU
+        // overrides during its earlier runtime initialization.
         String[] abis = android.os.Build.SUPPORTED_ABIS;
         if (abis.length > 0 && abis[0].startsWith("x86")) {
             try {
