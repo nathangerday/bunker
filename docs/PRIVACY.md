@@ -19,19 +19,22 @@ The game, game assets and master data are still supplied locally by the player.
 - Suppresses IronSource ad SDK initialization and network ad entry points.
   Bunker's existing local rewarded-video replacement is retained.
 - Disables Firebase Messaging listener setup and default automatic initialization.
+- Suppresses Adjust automatic/manual startup, lifecycle, event, revenue,
+  subscription, consent and sharing calls. Suppresses the IronSource integration
+  diagnostic, which reads an advertising identifier even without ad initialization.
 - Removes the listed analytics/ad automatic providers and advertising permissions.
   Android's INTERNET permission stays because the local server needs it.
 - Defaults update checks to off. This fork's launcher checks this fork's releases,
   not the upstream release channel, if the player explicitly enables checking.
 
-The 43 ARM64 sites in android/tools/telemetry_patches.json were resolved from the
+The 66 ARM64 sites in android/tools/telemetry_patches.json were resolved from the
 original 3.7.1 metadata using Il2CppDumper 6.7.46. Every site includes an original
 instruction fingerprint and executable-ELF range validation. All sites are checked
 before changing any bytes; a mismatch aborts the build. Reapplying is idempotent.
 No asynchronous method is replaced with null or an unfinished Task.
 
 The policy is applied by both the direct/web assembler and the apktool build.
-The game-patch revision is bumped to 2: older Bunker installations must be rebuilt
+The game-patch revision is bumped to 3 (privacy policy 2): older Bunker installations must be rebuilt
 from the original APK rather than being labelled as hardened by a launcher update.
 Updates made by these tools retain and reapply the manifest policy. The public web
 builder hosted by the original author does not include these fork changes.

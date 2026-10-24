@@ -8,6 +8,7 @@ import zipfile
 
 import assemble_apk
 import build_info
+import privacy
 
 ROOT = Path(__file__).resolve().parents[2]
 GAME_APK = ROOT / "inputs/game-3.7.1.apk"
@@ -30,7 +31,7 @@ class UpdateTests(unittest.TestCase):
         self.game_manifest, self.companion_manifest = manifests()
 
     def installed(self, **info_changes):
-        info = {"version": "1.0.0", "gamePatch": build_info.GAME_PATCH, "privacyPolicy": 1, "portOffset": 0, "gameDex": 1,
+        info = {"version": "1.0.0", "gamePatch": build_info.GAME_PATCH, "privacyPolicy": privacy.POLICY_VERSION, "portOffset": 0, "gameDex": 1,
                 "bunkerLibs": ["lib/arm64-v8a/liblunar.so", "lib/arm64-v8a/libold.so"]}
         info.update(info_changes)
         path = self.work / "installed.apk"

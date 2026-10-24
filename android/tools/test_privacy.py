@@ -19,6 +19,7 @@ def manifest():
         Element("meta-data", [Attr.string("name", "game.setting", privacy.NAME), Attr.string("value", "keep", privacy.VALUE)]),
         Element("provider", [Attr.string("name", "com.google.firebase.provider.FirebaseInitProvider", privacy.NAME)]),
         Element("provider", [Attr.string("name", "org.veritr1x.bunker.GameProcessProvider", privacy.NAME)]),
+        Element("receiver", [Attr.string("name", "com.adjust.sdk.AdjustReferrerReceiver", privacy.NAME)]),
         Element("service", [Attr.string("name", "com.google.firebase.components.ComponentDiscoveryService", privacy.NAME)], [
             Element("meta-data", [Attr.string("name", "com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar", privacy.NAME)]),
             Element("meta-data", [Attr.string("name", "unrelated.component", privacy.NAME)]),
@@ -62,6 +63,7 @@ class PrivacyTests(unittest.TestCase):
         self.assertIn("android.permission.INTERNET", permissions)
         self.assertNotIn("com.google.android.gms.permission.AD_ID", permissions)
         self.assertEqual([x.get("name").raw for x in app.find_all("provider")], ["org.veritr1x.bunker.GameProcessProvider"])
+        self.assertEqual(app.find_all("receiver"), [])
         self.assertEqual([x.get("name").raw for x in app.find_all("service")[0].find_all("meta-data")], ["unrelated.component"])
 
     def test_binary_manifest_round_trip_and_idempotence(self):

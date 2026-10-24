@@ -12,7 +12,7 @@ import xml.etree.ElementTree as ET
 import axml
 from axml import Attr, Element
 
-POLICY_VERSION = 1
+POLICY_VERSION = 2
 PATCH_FILE = Path(__file__).with_name("telemetry_patches.json")
 SITES = json.loads(PATCH_FILE.read_text(encoding="utf-8"))["sites"]
 
@@ -40,6 +40,7 @@ AUTO_INIT_PROVIDERS = {
     "com.google.android.gms.ads.MobileAdsInitProvider",
     "com.ironsource.lifecycle.IronsourceLifecycleProvider",
 }
+TRACKING_RECEIVERS = {"com.adjust.sdk.AdjustReferrerReceiver"}
 AD_PERMISSIONS = {
     "com.google.android.gms.permission.AD_ID",
     "android.permission.ACCESS_ADSERVICES_AD_ID",
@@ -64,6 +65,7 @@ def harden_manifest(manifest):
     app.children[:] = [entry for entry in app.children
                        if not (isinstance(entry, Element) and entry.get("name") and (
                            entry.name == "provider" and entry.get("name").raw in AUTO_INIT_PROVIDERS
+                           or entry.name == "receiver" and entry.get("name").raw in TRACKING_RECEIVERS
                            or entry.name == "meta-data" and entry.get("name").raw in COLLECTION_FLAGS))]
     for entry in app.children:
         if isinstance(entry, Element) and entry.name == "service":
@@ -89,6 +91,7 @@ def harden_text_manifest(path):
             root.remove(entry)
     for entry in list(app):
         if entry.tag == "provider" and entry.get(name_attr) in AUTO_INIT_PROVIDERS \
+                or entry.tag == "receiver" and entry.get(name_attr) in TRACKING_RECEIVERS \
                 or entry.tag == "meta-data" and entry.get(name_attr) in COLLECTION_FLAGS:
             app.remove(entry)
         elif entry.tag == "service":

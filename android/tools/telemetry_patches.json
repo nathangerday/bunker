@@ -258,6 +258,144 @@
       "rva": 87855376,
       "original": "f30f1ef8fd7b01a9fd430091d32e01f0",
       "replacement": "c0035fd6"
+    },
+    {
+      "name": "IronSource integration diagnostic",
+      "rva": 53025564,
+      "original": "f44fbea9fd7b01a9fd430091f43702d0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust automatic startup",
+      "rva": 66985920,
+      "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust lifecycle",
+      "rva": 66986832,
+      "original": "f44fbea9fd7b01a9fd430091b4cd01d0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust startup",
+      "rva": 66986716,
+      "original": "f44fbea9fd7b01a9fd430091b4cd01d0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android startup",
+      "rva": 66987520,
+      "original": "ff0302d1fa6703a9f85f04a9f65705a9",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust event",
+      "rva": 66992144,
+      "original": "f44fbea9fd7b01a9fd430091b4cd01b0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android event",
+      "rva": 66992260,
+      "original": "ff8301d1fa6701a9f85f02a9f65703a9",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust enable",
+      "rva": 66993544,
+      "original": "f44fbea9fd7b01a9fd430091b4cd01b0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android enable",
+      "rva": 66993644,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust enabled status",
+      "rva": 66993912,
+      "original": "f30f1ef8fd7b01a9fd430091b3cd01b0",
+      "replacement": "00008052c0035fd6"
+    },
+    {
+      "name": "Adjust Android enabled status",
+      "rva": 66994004,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "00008052c0035fd6"
+    },
+    {
+      "name": "Adjust package upload",
+      "rva": 66996260,
+      "original": "f30f1ef8fd7b01a9fd430091b3cd0190",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android package upload",
+      "rva": 66996352,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust ad revenue",
+      "rva": 66999512,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android ad revenue",
+      "rva": 66999628,
+      "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust subscription",
+      "rva": 67000136,
+      "original": "f44fbea9fd7b01a9fd43009194cd01f0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android subscription",
+      "rva": 67000236,
+      "original": "ff8301d1fa6701a9f85f02a9f65703a9",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust third party sharing",
+      "rva": 67001588,
+      "original": "f44fbea9fd7b01a9fd43009194cd01f0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android third party sharing",
+      "rva": 67001688,
+      "original": "ff0303d1fc6f06a9fa6707a9f85f08a9",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust measurement consent",
+      "rva": 67002840,
+      "original": "f44fbea9fd7b01a9fd43009194cd01d0",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android measurement consent",
+      "rva": 67002940,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android pause",
+      "rva": 66986960,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
+    },
+    {
+      "name": "Adjust Android resume",
+      "rva": 66987240,
+      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
+      "replacement": "c0035fd6"
     }
   ]
 }
