@@ -1,7 +1,22 @@
 package org.veritr1x.bunker;
 
 public final class NativeBridge {
-    static { System.loadLibrary("lunar"); }
+    static {
+        // Disable optional instructions for third-party Go CPU detection too
+        // (golang.org/x/sys/cpu reads GODEBUG during package initialization).
+        // The Go runtime itself needs the build overlay: Android ignores CPU
+        // overrides during its earlier runtime initialization.
+        String[] abis = android.os.Build.SUPPORTED_ABIS;
+        if (abis.length > 0 && abis[0].startsWith("x86")) {
+            try {
+                String debug = android.system.Os.getenv("GODEBUG");
+                android.system.Os.setenv("GODEBUG", (debug == null || debug.isEmpty() ? "" : debug + ",") + "cpu.all=off", true);
+            } catch (android.system.ErrnoException error) {
+                throw new IllegalStateException("Cannot configure Go for ARM translation", error);
+            }
+        }
+        System.loadLibrary("lunar");
+    }
     private NativeBridge() {}
     public static native String start(String dataDirectory, String assetDirectory);
     public static native void stop();
