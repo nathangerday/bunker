@@ -1,5 +1,39 @@
 # Validation
 
+## Android privacy — 2026-10-25
+
+- 44 focused Python tests passed across privacy, signing, APK packaging/update,
+  release and browser-builder modules. The original-APK boundary test checks
+  that messaging, rewarded-video display and reward callbacks retain their
+  original entry instructions; the binary guards and idempotence tests use synthetic
+  fixtures. The boundary test is skipped when private game files are absent.
+- Android launcher build and lint passed with a separate emulator-compatible
+  Go ARM64 build configuration. That portability workaround is not part of the
+  telemetry changes. The signed APK's settings, manifest, 12 telemetry patches,
+  signature and alignment were checked; the installed APK matched the artifact.
+- On an Android 11 emulator with ARM64 translation, the game started and an
+  actual Special Gift Roulette spin awarded 10 gems. Free gems increased from
+  10 to 20, the result dialog showed 10 gems and the Cage HUD's remaining-spin
+  count fell from five to four. The local video, rewarded and queued-close
+  callbacks ran without a null-reference exception or fatal error observed.
+  The test profile was temporarily advanced past the tutorial; its original
+  save was restored afterwards and every schema entry and SQL row matched the
+  pre-test snapshot.
+- A 276-second capture covering startup and that spin contained DNS/TLS for
+  GitHub and `www.googleapis.com`, with no advertising or telemetry hostnames
+  identified. The Google API traffic was not attributed to the game process.
+  No firewall, DNS block or adb reverse was used. The uninitialized IronSource
+  SDK still received local user ID, consent and mediation metadata calls;
+  no IronSource DNS/TLS traffic was observed.
+- A separate local interception of Facebook SDK 14.1.1 identified automatic
+  SDK-settings and feature-flag requests, with no event payload or advertising
+  ID observed in them. Removing `FacebookInitProvider` stopped these requests;
+  a subsequent 90-second startup showed no Facebook DNS/TLS hostname while
+  GitHub remained reachable. Original game DEX files were unchanged.
+
+These observations cover the exercised paths, not every possible connection.
+The full campaign, other menus and notification delivery were not validated.
+
 ## Arena against computer players — 2026-10-08
 
 - The Arena had no server at all: the nine PvP calls, the defense deck,

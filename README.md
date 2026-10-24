@@ -14,6 +14,8 @@ Run the game and its Lunar Tear server on the same phone or tablet, on Android o
 - **Offline play.** The game and its Lunar Tear server run on the same device. After setup, it
   needs no computer or Internet connection, and in-game downloads load from the device, even in
   airplane mode.
+- **Android privacy**: disables identified analytics, crash reporting, attribution and ad
+  mediation startup in the game. See [scope and upgrade requirements](docs/PRIVACY.md).
 - **The Bunker**, the launcher: imports the resource dump (`.7z`, `.zip` or an extracted folder,
   copied or used in place), starts Lunar Tear and opens the game, and checks that the game can
   reach it.
