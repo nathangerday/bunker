@@ -6,7 +6,8 @@ This branch disables telemetry in the original Global 3.7.1 ARM64 client:
   settings (two boolean bytes, guarded by whole-file hashes).
 - Deactivate Firebase Analytics and automatic Crashlytics/Facebook reporting;
   remove advertising permissions, ad auto-init providers and Adjust's referrer
-  receiver. Shared Firebase/Facebook initialization and messaging stay intact.
+  receiver. Firebase initialization and messaging stay intact. Remove Facebook's
+  automatic initializer to prevent its background Graph configuration fetches.
 - Apply 10 fingerprint-checked ARM64 patches: Unity Analytics startup,
   Crashlytics reporting, Facebook Android events and Adjust startup. Unknown
   binaries are refused and reapplying the patch is safe.
@@ -33,10 +34,18 @@ launcher, use compatible fork releases, or integrate these changes upstream.
 
 ## Validation
 
-The retained native sites and the two Unity settings bytes are checked against
-the original APK; tests also check manifest round trips, idempotence, unknown
-binary rejection, compatible update packaging and untouched messaging/ad code.
-Connected runtime verification is being repeated after the trim. The earlier
-build reached the title screen and contacted GitHub with Internet enabled, but
-that does not prove this smaller patch's behavior. Facebook Graph traffic was
-not classified; this is not a guarantee that every SDK connection is absent.
+42 focused tests passed, covering original-file guards, manifest round trips,
+idempotence, compatible update packaging and untouched messaging/ad code.
+Android build/lint passed on the separate emulator test branch (run 40131982518).
+The rebuilt APK was verified to contain the 10 patches with the 47 removed sites
+restored. A 90-second connected startup reached the existing profile's title
+screen and contacted GitHub; Firebase reported analytics deactivated and Adjust
+reported uninitialized. No Unity analytics DNS queries or new startup exceptions
+were observed. This short test does not cover every game path.
+
+Facebook SDK 14.1.1's remaining startup requests were intercepted locally:
+`GET /v14.0/app` fetches SDK settings and `GET /v14.0/app/mobile_sdk_gk` fetches
+feature flags. They carried SDK/platform information and the application's
+credential, with no event payload or advertising ID observed. Removing
+`FacebookInitProvider` stopped both request types in the repeat startup probe.
+The diagnostic redirect is not included in the patch.

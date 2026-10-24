@@ -69,7 +69,7 @@ class PrivacyTests(unittest.TestCase):
         self.assertIn("android.permission.INTERNET", permissions)
         self.assertNotIn("com.google.android.gms.permission.AD_ID", permissions)
         self.assertEqual([x.get("name").raw for x in app.find_all("provider")], [
-            "com.google.firebase.provider.FirebaseInitProvider", "com.facebook.internal.FacebookInitProvider",
+            "com.google.firebase.provider.FirebaseInitProvider",
             "org.veritr1x.bunker.GameProcessProvider"])
         self.assertEqual(app.find_all("receiver"), [])
         self.assertEqual([x.get("name").raw for x in app.find_all("service")[1].find_all("meta-data")], ["unrelated.component"])
@@ -101,7 +101,7 @@ class PrivacyTests(unittest.TestCase):
             flags = {x.get("{" + axml.ANDROID_NS + "}name"): x.get("{" + axml.ANDROID_NS + "}value")
                      for x in root.find("application").findall("meta-data")}
             self.assertEqual(flags, {k: str(v).lower() for k, v in privacy.COLLECTION_FLAGS.items()})
-            self.assertEqual(len(root.find("application").findall("provider")), 1)
+            self.assertEqual(len(root.find("application").findall("provider")), 0)
             self.assertIsNotNone(root.find("uses-permission"))
 
     def test_native_patches_are_checked_idempotent_and_localized(self):

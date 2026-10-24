@@ -29,6 +29,8 @@ COLLECTION_FLAGS = {
     "com.facebook.sdk.AdvertiserIDCollectionEnabled": False,
 }
 AUTO_INIT_PROVIDERS = {
+    # SDK 14.1.1 fetches Graph settings during sdkInitialize even with events off.
+    "com.facebook.internal.FacebookInitProvider",
     "com.facebook.ads.AudienceNetworkContentProvider",
     "com.applovin.sdk.AppLovinInitProvider",
     "com.google.android.gms.ads.MobileAdsInitProvider",
