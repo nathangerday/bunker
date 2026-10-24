@@ -42,7 +42,9 @@ builder hosted by the original author does not include these fork changes.
 ## Enforce external-network blocking on a PC emulator
 
 SDK deactivation is not a universal network sandbox. Native Unity engine code and
-unreviewed SDK paths may still attempt connections. For enforced IP egress
+unreviewed SDK paths may still attempt connections. Runtime testing observed the
+engine trying `cdp.cloud.unity3d.com` even with the managed SDK paths disabled.
+The APK alone therefore does not guarantee zero telemetry traffic. For enforced IP egress
 blocking, use the supplied helper with a root-enabled Android emulator. An
 Android 11 Google APIs x86_64 image is a suitable test target: it supports ARM64
 translation and adb root. A Google Play production image does not provide adb root.
@@ -84,11 +86,22 @@ delegate DNS queries to a system resolver outside the game's UID; the helper doe
 not claim to silence all system DNS traffic. For zero external emulator traffic,
 disconnect the emulator's network as well. Loopback remains usable offline.
 
+On the tested Google emulator, Wi-Fi/mobile-data switches alone left an Ethernet
+IPv6 route. The isolated test setup also ran `adb -s emulator-5554 shell ip link
+set eth0 down` after `adb root`, preserving loopback and ADB. Use the correct
+uplink interface for another emulator. This disconnects the whole emulator;
+the helper's firewall rules themselves affect only the game's UID.
+
 These changes apply to Android. The iOS build is not claimed to have equivalent
 SDK hardening. Full game compatibility and actual device network behavior must
 be assessed by runtime testing, not merely a successful APK build.
 
 ## Signing and saves
+
+Build the fork's launcher with [the source-build instructions](BUILD.md), or use
+the launcher-only artifact from its `Privacy Android validation` workflow. Supply
+the original game APK and master data locally to `android/tools/assemble_apk.py`.
+On Windows set `$env:PYTHONUTF8='1'` before running the Python build tools.
 
 Use your own private signing key for a persistent installation. Do not upload
 game APKs, resource dumps, master data, saves, or signing keys to the repository.
