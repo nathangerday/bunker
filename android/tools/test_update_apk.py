@@ -30,7 +30,7 @@ class UpdateTests(unittest.TestCase):
         self.game_manifest, self.companion_manifest = manifests()
 
     def installed(self, **info_changes):
-        info = {"version": "1.0.0", "gamePatch": build_info.GAME_PATCH, "portOffset": 0, "gameDex": 1,
+        info = {"version": "1.0.0", "gamePatch": build_info.GAME_PATCH, "privacyPolicy": 1, "portOffset": 0, "gameDex": 1,
                 "bunkerLibs": ["lib/arm64-v8a/liblunar.so", "lib/arm64-v8a/libold.so"]}
         info.update(info_changes)
         path = self.work / "installed.apk"

@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import axml  # noqa: E402
 import build_info  # noqa: E402
 import notice_pack  # noqa: E402
+import privacy  # noqa: E402
 from axml import Attr, Element  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -89,7 +90,7 @@ def patch_game_files(lib, metadata, port_offset=0):
         grpc, http = addresses(port_offset)
         run_cli(load("patch_apk", SCRIPTS / "android/patch_apk.py"), work, "--grpc-addr", grpc, "--http-addr", http)
         load("package_game", ROOT / "android/tools/package_game.py").patch_local_reachability(work)
-        return (work / LIB).read_bytes(), (work / METADATA).read_bytes()
+        return privacy.patch_library((work / LIB).read_bytes()), (work / METADATA).read_bytes()
 
 
 def patch_master(original):
@@ -142,6 +143,7 @@ def patch_manifest(game_manifest, companion_manifest, port_offset=0):
             if source.name == "provider":  # Authorities are unique per device: use the game's.
                 source.set(Attr.string("authorities", PACKAGE + ".lunar_loopback", AUTHORITIES))
             app.children.append(source)
+    privacy.harden_manifest(manifest)
     return axml.serialize(doc), game_activity
 
 
@@ -272,7 +274,7 @@ def update(installed_apk, companion_apk, output, log=print, notices=None):
         if "assets/lunar/build.json" not in names or "assets/lunar/game-manifest.xml" not in names:
             raise RuntimeError("This update needs the web builder: this build is older than Bunker 1.0.0")
         old = json.loads(game.read("assets/lunar/build.json"))
-        if old.get("gamePatch") != build_info.GAME_PATCH:
+        if old.get("gamePatch") != build_info.GAME_PATCH or old.get("privacyPolicy") != privacy.POLICY_VERSION:
             raise RuntimeError("This update needs the web builder: it changes how the game itself is patched")
         log("Updating the manifest…")
         manifest, _ = patch_manifest(game.read("assets/lunar/game-manifest.xml"), companion.read("AndroidManifest.xml"),

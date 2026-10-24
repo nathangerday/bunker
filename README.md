@@ -1,3 +1,8 @@
+> Android privacy fork: original telemetry SDK hardening and a root-emulator
+> localhost-only firewall helper. See [the privacy guide](docs/PRIVACY.md).
+> Upstream project: [veritr1x/bunker](https://github.com/veritr1x/bunker).
+> The upstream hosted builder does not include these changes.
+
 ## AI usage disclosure
 
 This is a **personal hobby project** built with extensive AI assistance from OpenAI Codex and Anthropic Claude for coding, integration, testing, and documentation. It is an unofficial, experimental project, not an official game release.
