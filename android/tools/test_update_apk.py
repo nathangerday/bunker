@@ -133,6 +133,11 @@ class UpdateTests(unittest.TestCase):
             assemble_apk.update(self.installed(gamePatch=build_info.GAME_PATCH + 1), self.companion(),
                                 self.work / "out.apk", log=lambda m: None)
 
+    def test_missing_privacy_policy_cannot_be_labelled_hardened_by_update(self):
+        with self.assertRaisesRegex(RuntimeError, "web builder"):
+            assemble_apk.update(self.installed(privacyPolicy=None), self.companion(),
+                                self.work / "out.apk", log=lambda m: None)
+
 
 class DeviceBuildTests(unittest.TestCase):
     """bunker_update.build_android, as the launcher runs it (with the tools importable as bunker_tools)."""

@@ -48,8 +48,11 @@ The native server build uses a checked Go 1.25.8 source overlay to skip the
 optional Neoverse CPU-identification probe on Android. The API 30 ARM translator
 advertises CPUID support but crashes on the MIDR register read. This overlay
 selects Go's generic performance path and leaves the installed toolchain intact.
-Other ARM capability checks remain enabled. A different Go version or source
-fingerprint requires review before building.
+The same translator advertises AES instructions it cannot execute. On x86
+emulators the launcher sets Go's documented `GODEBUG=cpu.all=off` before loading
+the server library, selecting portable implementations. Real ARM devices retain
+the other capability optimizations. A different Go version or source fingerprint
+requires review before building.
 
 After installing the hardened APK, list devices and select the intended emulator:
 

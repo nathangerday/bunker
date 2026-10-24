@@ -1,7 +1,22 @@
 package org.veritr1x.bunker;
 
 public final class NativeBridge {
-    static { System.loadLibrary("lunar"); }
+    static {
+        // API 30's ARM translator also advertises AES instructions it cannot
+        // execute. Keep Go on its portable paths in x86 emulator processes.
+        // This must precede dlopen: Go's CPU and random-seed initialization run
+        // while the shared library is loaded. Real ARM devices keep their flags.
+        String[] abis = android.os.Build.SUPPORTED_ABIS;
+        if (abis.length > 0 && abis[0].startsWith("x86")) {
+            try {
+                String debug = android.system.Os.getenv("GODEBUG");
+                android.system.Os.setenv("GODEBUG", (debug == null || debug.isEmpty() ? "" : debug + ",") + "cpu.all=off", true);
+            } catch (android.system.ErrnoException error) {
+                throw new IllegalStateException("Cannot configure Go for ARM translation", error);
+            }
+        }
+        System.loadLibrary("lunar");
+    }
     private NativeBridge() {}
     public static native String start(String dataDirectory, String assetDirectory);
     public static native void stop();

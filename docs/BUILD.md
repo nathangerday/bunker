@@ -11,7 +11,7 @@ be rejected. The scripts read your originals and work on separate copies.
 
 Use macOS or Linux with:
 
-- Git, Make, Go 1.25.8 or newer, `protoc`, and `apktool`.
+- Git, Make, Go 1.25.8 (the Android CPU overlay checks this version), `protoc`, and `apktool`.
 - Python 3.11.9 or newer, available as `python3.11`. Run the build with it; an
   older `python3` (such as macOS's 3.9) cannot run it.
 - JDK 21, with `JAVA_HOME` pointing to it. Newer JDKs fail in Android's build.
@@ -30,7 +30,7 @@ Python 3.13 instead of the Android tools.
 ## 3. Clone and build
 
 ```sh
-git clone --recurse-submodules https://github.com/veritr1x/bunker.git
+git clone --recurse-submodules --branch privacy/disable-telemetry https://github.com/nathangerday/bunker.git
 cd bunker
 python3.11 scripts/build.py \
   --apk /path/to/original-game.apk \
