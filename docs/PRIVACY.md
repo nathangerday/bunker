@@ -1,113 +1,72 @@
-# Android privacy fork
+# Android tracker suppression
 
-This fork hardens the Global 3.7.1 ARM64 client against its original telemetry
-SDKs. The existing consent dialog is not a reliable indication of collection:
-the patched methods deny Unity Analytics consent regardless of the saved choice.
-The game, game assets and master data are still supplied locally by the player.
+This fork targets analytics, crash reporting and advertising/attribution SDKs
+present in the original Global 3.7.1 ARM64 game. It does not disable Internet
+access. Bunker's update checker, release URLs and installation behavior remain
+unchanged from upstream. Firebase Messaging and local notification code also
+remain unchanged.
 
-## What the APK changes
+## Changes
 
-- Permanently deactivates Firebase Analytics through Android manifest metadata,
-  disables its advertising-ID collection, and forces both managed collection
-  setter arguments to false without skipping Firebase's normal initialization.
-- Suppresses Unity Analytics startup/event/flush paths and reports consent as
-  denied. Legacy managed Unity Analytics calls return AnalyticsDisabled.
-- Suppresses Crashlytics initialization, logging, user identification and exception
-  recording, and removes its automatic component registration.
-- Suppresses Facebook app, purchase and activation events; disables automatic
-  Facebook initialization/event logging and advertiser-ID collection.
-- Suppresses IronSource ad SDK initialization and network ad entry points.
-  Bunker's existing local rewarded-video replacement is retained.
-- Disables Firebase Messaging listener setup and default automatic initialization.
-- Suppresses Adjust automatic/manual startup, lifecycle, event, revenue,
-  subscription, consent and sharing calls. Suppresses the IronSource integration
-  diagnostic, which reads an advertising identifier even without ad initialization.
-- Removes the listed analytics/ad automatic providers and advertising permissions.
-  Android's INTERNET permission stays because the local server needs it.
-- Defaults update checks to off. This fork's launcher checks this fork's releases,
-  not the upstream release channel, if the player explicitly enables checking.
+- Disable native Unity Analytics in the serialized startup settings before the
+  engine initializes it. Only `UnityAnalyticsSettings.m_Enabled` and
+  `m_InitializeOnStartup` change; purchasing and shared services retain their
+  original settings.
+- Suppress managed Unity Analytics startup, event and upload paths, including
+  its analytics-specific consent checks and legacy event calls.
+- Permanently deactivate Firebase Analytics using manifest metadata and force
+  its collection setters off. Suppress Crashlytics recording and automatic
+  registration. Keep the shared Firebase provider and Messaging components.
+- Suppress Facebook activation, purchase and event logging, and disable its
+  automatic event and advertising-ID collection. Keep its shared initializer.
+- Suppress Adjust startup, lifecycle, event and attribution/reporting paths and
+  remove its install-referrer receiver.
+- Disable advertising SDK automatic providers and IronSource initialization,
+  identifier/metadata calls and identifier diagnostic. Preserve Bunker's existing
+  local rewarded-video replacement; its availability check still returns true.
+  The game's ad-display entry points are not replaced by this privacy policy.
+- Remove advertising-ID/AdServices permissions. Keep Android's INTERNET
+  permission for both the local server and legitimate update connections.
 
-The 66 ARM64 sites in android/tools/telemetry_patches.json were resolved from the
-original 3.7.1 metadata using Il2CppDumper 6.7.46. Every site includes an original
-instruction fingerprint and executable-ELF range validation. All sites are checked
-before changing any bytes; a mismatch aborts the build. Reapplying is idempotent.
-No asynchronous method is replaced with null or an unfinished Task.
+The 57 ARM64 locations in `android/tools/telemetry_patches.json` were resolved
+from the original metadata using Il2CppDumper 6.7.46. The patcher checks original
+instructions and executable ELF ranges before changing bytes. Unknown binaries
+are refused; reapplying is idempotent. No asynchronous method is replaced with
+null or an unfinished Task.
 
-The policy is applied by both the direct/web assembler and the apktool build.
-The game-patch revision is bumped to 3 (privacy policy 2): older Bunker installations must be rebuilt
-from the original APK rather than being labelled as hardened by a launcher update.
-Updates made by these tools retain and reapply the manifest policy. The public web
-builder hosted by the original author does not include these fork changes.
+The native Unity settings were decoded with UnityPy 1.25.0. Only two boolean
+bytes are patched, guarded by SHA-256 hashes of the original and patched file.
+UnityPy is an analysis tool, not a new build or browser dependency.
 
-## Enforce external-network blocking on a PC emulator
+These changes apply through both the direct/web assembler and apktool packaging.
+Game patch 4 / privacy policy 3 requires rebuilding older installations from the
+original APK. A launcher-only update cannot undo the earlier draft's game-code
+or manifest changes. Later compatible launcher updates preserve these patches.
 
-SDK deactivation is not a universal network sandbox. Native Unity engine code and
-unreviewed SDK paths may still attempt connections. Runtime testing observed the
-engine trying `cdp.cloud.unity3d.com` even with the managed SDK paths disabled.
-The APK alone therefore does not guarantee zero telemetry traffic. For enforced IP egress
-blocking, use the supplied helper with a root-enabled Android emulator. An
-Android 11 Google APIs x86_64 image is a suitable test target: it supports ARM64
-translation and adb root. A Google Play production image does not provide adb root.
+## Build and update
 
-The native server build uses a checked Go 1.25.8 source overlay to select its
-portable CPU paths on Android. The API 30 ARM translator advertises CPUID and AES
-support but crashes on the MIDR register read and AESE instruction. Android does
-not support Go's early GODEBUG CPU override, so this is handled at build time,
-before runtime hash initialization. This also sacrifices optional Go CPU
-optimizations on real ARM devices. On x86 emulators the launcher additionally
-sets `GODEBUG=cpu.all=off` for third-party CPU detection during later package
-initialization. The installed Go toolchain stays intact. A different Go version
-or source fingerprint requires review before building.
+Follow [BUILD.md](BUILD.md) or use this fork's `Privacy Android validation`
+launcher artifact. Supply the original APK and master data locally. On Windows,
+set `$env:PYTHONUTF8='1'` for the Python assembly tools. The upstream hosted
+builder does not include this fork's patches.
 
-After installing the hardened APK, list devices and select the intended emulator:
+Update checks stay enabled by default and use upstream Bunker releases. Android
+still requires the same signing key to update an installation. As in upstream,
+an installation signed with your own key must be rebuilt and signed with that
+key; the public-key self-installer cannot replace it. Retain your private key
+and install the replacement APK over the existing app to preserve saves.
 
-```powershell
-adb devices
-adb -s emulator-5554 root
-python scripts/emulator_network.py run --serial emulator-5554
-```
+No firewall, DNS, emulator network, push-notification or CPU configuration change
+is included in this privacy PR. The earlier emulator CPU workaround is isolated
+on `compat/android-arm-translation`; it is optional compatibility work.
 
-The helper stops the game, discovers its installed UID in Android user 0, creates
-dedicated IPv4 and IPv6 OUTPUT rules for that UID, and starts the launcher only
-after verifying both policies. Localhost remains available. All other destination
-addresses are rejected, including native TCP/UDP sockets. No other app UID or
-host-PC firewall rule is changed. If root, owner matching, IPv6, or verification
-fails, it exits unsuccessfully and does not launch the game.
+## Verification limits
 
-```powershell
-python scripts/emulator_network.py status --serial emulator-5554
-python scripts/emulator_network.py remove --serial emulator-5554
-```
+This is targeted SDK suppression, not a universal network sandbox. A successful
+build or a quiet log is not proof that every possible tracking path is absent.
+See [PRIVACY_VALIDATION.md](PRIVACY_VALIDATION.md) for evidence and remaining
+runtime/gameplay checks. No equivalent iOS hardening is claimed.
 
-Rules are runtime state: reapply after an emulator reboot or reinstall (which may
-change the UID). Remove rules before uninstalling to avoid leaving a rule for an
-old UID. A saved emulator snapshot may also contain these rules. Android may
-delegate DNS queries to a system resolver outside the game's UID; the helper does
-not claim to silence all system DNS traffic. For zero external emulator traffic,
-disconnect the emulator's network as well. Loopback remains usable offline.
-
-On the tested Google emulator, Wi-Fi/mobile-data switches alone left an Ethernet
-IPv6 route. The isolated test setup also ran `adb -s emulator-5554 shell ip link
-set eth0 down` after `adb root`, preserving loopback and ADB. Use the correct
-uplink interface for another emulator. This disconnects the whole emulator;
-the helper's firewall rules themselves affect only the game's UID.
-
-These changes apply to Android. The iOS build is not claimed to have equivalent
-SDK hardening. Full game compatibility and actual device network behavior must
-be assessed by runtime testing, not merely a successful APK build.
-
-## Signing and saves
-
-Build the fork's launcher with [the source-build instructions](BUILD.md), or use
-the launcher-only artifact from its `Privacy Android validation` workflow. Supply
-the original game APK and master data locally to `android/tools/assemble_apk.py`.
-On Windows set `$env:PYTHONUTF8='1'` before running the Python build tools.
-
-Use your own private signing key for a persistent installation. Do not upload
-game APKs, resource dumps, master data, saves, or signing keys to the repository.
-An APK signed with a different key cannot update an existing installation.
-Export saves through Bunker before replacing an installation; uninstalling an
-app deletes its private data. Keep your private key for future builds.
-
-The original Bunker project and its authors retain their credits and licenses.
+Game files, resource dumps, saves and private signing material stay local and
+must not be committed or uploaded. Original project credits and licenses remain.
 Upstream: https://github.com/veritr1x/bunker

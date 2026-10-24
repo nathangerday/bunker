@@ -29,8 +29,8 @@ import java.security.MessageDigest;
  * and hands it to Android's installer, which asks the player to confirm.
  */
 final class Updater {
-    static final String LATEST="https://api.github.com/repos/nathangerday/bunker/releases/latest";
-    static final String WEB_BUILDER="https://github.com/nathangerday/bunker/blob/privacy/disable-telemetry/docs/PRIVACY.md";
+    static final String LATEST="https://api.github.com/repos/veritr1x/bunker/releases/latest";
+    static final String WEB_BUILDER="https://veritr1x.github.io/bunker/";
     static final String INSTALL_RESULT="org.veritr1x.bunker.UPDATE_INSTALLED";
     private static final long SPACE=350L<<20;
     private static final String PREFS="lunar_update";
@@ -120,7 +120,7 @@ final class Updater {
         return notices.optString("sha256").equals(have)?null:notices;
     }
 
-    static boolean enabled(Context c) { return c.getSharedPreferences(PREFS,Context.MODE_PRIVATE).getBoolean("check",false); }
+    static boolean enabled(Context c) { return c.getSharedPreferences(PREFS,Context.MODE_PRIVATE).getBoolean("check",true); }
     static void enabled(Context c,boolean on) { c.getSharedPreferences(PREFS,Context.MODE_PRIVATE).edit().putBoolean("check",on).apply(); }
 
     /** This app's build.json, or null for builds made before 1.0.0. */

@@ -11,7 +11,7 @@ be rejected. The scripts read your originals and work on separate copies.
 
 Use macOS or Linux with:
 
-- Git, Make, Go 1.25.8 (the Android CPU overlay checks this version), `protoc`, and `apktool`.
+- Git, Make, Go 1.25.8 or newer, `protoc`, and `apktool`.
 - Python 3.11.9 or newer, available as `python3.11`. Run the build with it; an
   older `python3` (such as macOS's 3.9) cannot run it.
 - JDK 21, with `JAVA_HOME` pointing to it. Newer JDKs fail in Android's build.

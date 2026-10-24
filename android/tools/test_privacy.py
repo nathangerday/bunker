@@ -4,6 +4,7 @@ import tempfile
 from pathlib import Path
 import unittest
 import xml.etree.ElementTree as ET
+import zipfile
 
 import axml
 from axml import Attr, Document, Element
@@ -18,7 +19,12 @@ def manifest():
                               Attr.boolean("value", True, privacy.VALUE)]),
         Element("meta-data", [Attr.string("name", "game.setting", privacy.NAME), Attr.string("value", "keep", privacy.VALUE)]),
         Element("provider", [Attr.string("name", "com.google.firebase.provider.FirebaseInitProvider", privacy.NAME)]),
+        Element("provider", [Attr.string("name", "com.facebook.internal.FacebookInitProvider", privacy.NAME)]),
+        Element("provider", [Attr.string("name", "com.applovin.sdk.AppLovinInitProvider", privacy.NAME)]),
         Element("provider", [Attr.string("name", "org.veritr1x.bunker.GameProcessProvider", privacy.NAME)]),
+        Element("meta-data", [Attr.string("name", "firebase_messaging_auto_init_enabled", privacy.NAME),
+                              Attr.boolean("value", True, privacy.VALUE)]),
+        Element("service", [Attr.string("name", "com.google.firebase.messaging.FirebaseMessagingService", privacy.NAME)]),
         Element("receiver", [Attr.string("name", "com.adjust.sdk.AdjustReferrerReceiver", privacy.NAME)]),
         Element("service", [Attr.string("name", "com.google.firebase.components.ComponentDiscoveryService", privacy.NAME)], [
             Element("meta-data", [Attr.string("name", "com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar", privacy.NAME)]),
@@ -62,9 +68,15 @@ class PrivacyTests(unittest.TestCase):
         permissions = {x.get("name").raw for x in root.find_all("uses-permission")}
         self.assertIn("android.permission.INTERNET", permissions)
         self.assertNotIn("com.google.android.gms.permission.AD_ID", permissions)
-        self.assertEqual([x.get("name").raw for x in app.find_all("provider")], ["org.veritr1x.bunker.GameProcessProvider"])
+        self.assertEqual([x.get("name").raw for x in app.find_all("provider")], [
+            "com.google.firebase.provider.FirebaseInitProvider", "com.facebook.internal.FacebookInitProvider",
+            "org.veritr1x.bunker.GameProcessProvider"])
         self.assertEqual(app.find_all("receiver"), [])
-        self.assertEqual([x.get("name").raw for x in app.find_all("service")[0].find_all("meta-data")], ["unrelated.component"])
+        self.assertEqual([x.get("name").raw for x in app.find_all("service")[1].find_all("meta-data")], ["unrelated.component"])
+        self.assertEqual(app.find_all("service")[0].get("name").raw,
+                         "com.google.firebase.messaging.FirebaseMessagingService")
+        messaging = next(x for x in app.find_all("meta-data") if x.get("name").raw == "firebase_messaging_auto_init_enabled")
+        self.assertTrue(messaging.get("value").data)
 
     def test_binary_manifest_round_trip_and_idempotence(self):
         root = manifest()
@@ -89,7 +101,7 @@ class PrivacyTests(unittest.TestCase):
             flags = {x.get("{" + axml.ANDROID_NS + "}name"): x.get("{" + axml.ANDROID_NS + "}value")
                      for x in root.find("application").findall("meta-data")}
             self.assertEqual(flags, {k: str(v).lower() for k, v in privacy.COLLECTION_FLAGS.items()})
-            self.assertEqual(root.find("application").findall("provider"), [])
+            self.assertEqual(len(root.find("application").findall("provider")), 1)
             self.assertIsNotNone(root.find("uses-permission"))
 
     def test_native_patches_are_checked_idempotent_and_localized(self):
@@ -121,6 +133,35 @@ class PrivacyTests(unittest.TestCase):
         struct.pack_into("<H", source, 18, 62)
         with self.assertRaisesRegex(ValueError, "ARM64"):
             privacy.patch_library(source)
+
+    def test_unrecognized_unity_settings_are_rejected(self):
+        with self.assertRaisesRegex(ValueError, "Unsupported game data"):
+            privacy.patch_unity_settings(b"another game's settings")
+
+    def test_real_game_settings_and_messaging_boundary(self):
+        apk = Path(__file__).resolve().parents[2] / "inputs/game-3.7.1.apk"
+        if not apk.is_file():
+            self.skipTest("requires the user's original APK")
+        with zipfile.ZipFile(apk) as archive:
+            original = archive.read(privacy.UNITY_SETTINGS)
+            patched = privacy.patch_unity_settings(original)
+            self.assertEqual([i for i, (a, b) in enumerate(zip(original, patched)) if a != b],
+                             list(privacy.UNITY_ANALYTICS_OFFSETS))
+            self.assertEqual(privacy.patch_unity_settings(patched), patched)
+            changed = bytearray(original)
+            changed[0] ^= 1
+            with self.assertRaises(ValueError):
+                privacy.patch_unity_settings(changed)
+            library = archive.read("lib/arm64-v8a/libil2cpp.so")
+            patched = privacy.patch_library(library)
+            segments = privacy._segments(library)
+            # Firebase Messaging's four callback/listener methods and the four
+            # ad-display entry points suppressed by the earlier draft stay intact.
+            for rva in (0x53C8CD4, 0x53C9600, 0x53C903C, 0x53C9110,
+                        53027100, 53027280, 53028000, 53027640):
+                offset = next(file + rva - address for file, address, size in segments
+                              if address <= rva < address + size)
+                self.assertEqual(patched[offset:offset + 16], library[offset:offset + 16])
 
 
 if __name__ == "__main__":

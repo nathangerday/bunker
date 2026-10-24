@@ -212,7 +212,7 @@ class ApkWriter:
 def assemble(apk, master, companion_apk, output, log=print, port_offset=0, notices=None):
     with zipfile.ZipFile(apk) as game, zipfile.ZipFile(companion_apk) as companion, open(apk, "rb") as raw:
         names = set(game.namelist())
-        for required in ("AndroidManifest.xml", LIB, METADATA, "resources.arsc"):
+        for required in ("AndroidManifest.xml", LIB, METADATA, "resources.arsc", privacy.UNITY_SETTINGS):
             if required not in names:
                 raise RuntimeError(f"Not the ARM64 game APK: {required} is missing")
         log("Patching the game library and metadata…")
@@ -222,7 +222,8 @@ def assemble(apk, master, companion_apk, output, log=print, port_offset=0, notic
         log("Patching master data…")
         original_master = Path(master).read_bytes()
         patched_master = patch_master(original_master)
-        replaced = {"AndroidManifest.xml": manifest, LIB: lib, METADATA: metadata}
+        replaced = {"AndroidManifest.xml": manifest, LIB: lib, METADATA: metadata,
+                    privacy.UNITY_SETTINGS: privacy.patch_unity_settings(game.read(privacy.UNITY_SETTINGS))}
         dex = [n for n in names if re.fullmatch(r"classes\d*\.dex", n)]
         next_dex = max(int(n[7:-4] or 1) for n in dex) + 1
         temporary = Path(str(output) + ".partial")

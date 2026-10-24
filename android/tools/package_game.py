@@ -71,6 +71,8 @@ def main():
     patch_local_reachability(game)
     library = game / "lib/arm64-v8a/libil2cpp.so"
     library.write_bytes(privacy.patch_library(library.read_bytes()))
+    settings = game / privacy.UNITY_SETTINGS
+    settings.write_bytes(privacy.patch_unity_settings(settings.read_bytes()))
     manifest=game/"AndroidManifest.xml";tree=ET.parse(manifest);doc=tree.getroot();app=doc.find("application")
     if app is None: raise RuntimeError("Game manifest has no application")
     package=doc.attrib["package"]

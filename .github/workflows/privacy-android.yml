@@ -36,7 +36,7 @@ jobs:
           yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" >/dev/null
       - name: Test privacy and packaging logic
         run: |
-          (cd scripts && python -m unittest test_emulator_network test_version test_release_assets test_notices)
+          (cd scripts && python -m unittest test_version test_release_assets test_notices)
           (cd android/tools && python -m unittest test_privacy test_build_info test_notice_pack)
           (cd web && python -m unittest test_build_site)
       - name: Prepare pinned sources

@@ -200,64 +200,10 @@
       "replacement": "c0035fd6"
     },
     {
-      "name": "IronSource consent",
-      "rva": 53028384,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource interstitial load",
-      "rva": 53027100,
-      "original": "f44fbea9fd7b01a9fd430091f43702b0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource interstitial show",
-      "rva": 53027280,
-      "original": "f44fbea9fd7b01a9fd430091f43702b0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource banner load",
-      "rva": 53028000,
-      "original": "f657bda9f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource offerwall show",
-      "rva": 53027640,
-      "original": "f44fbea9fd7b01a9fd430091f43702b0",
-      "replacement": "c0035fd6"
-    },
-    {
       "name": "Offline rewarded video availability",
       "rva": 53026920,
       "original": "f44fbea9fd7b01a9fd430091f43702b0",
       "replacement": "20008052c0035fd6"
-    },
-    {
-      "name": "Firebase Messaging listener creation",
-      "rva": 87854292,
-      "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Firebase Messaging callbacks",
-      "rva": 87856640,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Firebase Messaging callback enabling",
-      "rva": 87855164,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Firebase Messaging pending events",
-      "rva": 87855376,
-      "original": "f30f1ef8fd7b01a9fd430091d32e01f0",
-      "replacement": "c0035fd6"
     },
     {
       "name": "IronSource integration diagnostic",

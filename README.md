@@ -1,5 +1,5 @@
-> Android privacy fork: original telemetry SDK hardening and a root-emulator
-> localhost-only firewall helper. See [the privacy guide](docs/PRIVACY.md).
+> Android privacy fork: targeted analytics and advertising tracker suppression.
+> Updates and notifications retain their upstream behavior. See [the privacy guide](docs/PRIVACY.md).
 > Upstream project: [veritr1x/bunker](https://github.com/veritr1x/bunker).
 > The upstream hosted builder does not include these changes.
 

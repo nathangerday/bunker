@@ -1,9 +1,10 @@
 """Consent-independent telemetry hardening for the Global 3.7.1 ARM64 client.
 
-This is SDK deactivation, not an operating-system network sandbox. For enforced
-external-network blocking use scripts/emulator_network.py as documented in
-docs/PRIVACY.md. Android's INTERNET permission remains necessary for loopback.
+Only analytics, crash reporting and advertising/attribution SDK paths are
+changed. Bunker's updater, Firebase Messaging and local notifications stay
+available. Android's INTERNET permission remains unchanged.
 """
+import hashlib
 import json
 from pathlib import Path
 import struct
@@ -12,7 +13,7 @@ import xml.etree.ElementTree as ET
 import axml
 from axml import Attr, Element
 
-POLICY_VERSION = 2
+POLICY_VERSION = 3
 PATCH_FILE = Path(__file__).with_name("telemetry_patches.json")
 SITES = json.loads(PATCH_FILE.read_text(encoding="utf-8"))["sites"]
 
@@ -23,18 +24,12 @@ COLLECTION_FLAGS = {
     "firebase_analytics_collection_deactivated": True,
     "firebase_analytics_collection_enabled": False,
     "firebase_crashlytics_collection_enabled": False,
-    "firebase_data_collection_default_enabled": False,
-    "firebase_messaging_auto_init_enabled": False,
     "google_analytics_adid_collection_enabled": False,
     "google_analytics_default_allow_ad_personalization_signals": False,
-    "com.facebook.sdk.AutoInitEnabled": False,
     "com.facebook.sdk.AutoLogAppEventsEnabled": False,
     "com.facebook.sdk.AdvertiserIDCollectionEnabled": False,
-    "com.facebook.sdk.CodelessDebugLogEnabled": False,
 }
 AUTO_INIT_PROVIDERS = {
-    "com.google.firebase.provider.FirebaseInitProvider",
-    "com.facebook.internal.FacebookInitProvider",
     "com.facebook.ads.AudienceNetworkContentProvider",
     "com.applovin.sdk.AppLovinInitProvider",
     "com.google.android.gms.ads.MobileAdsInitProvider",
@@ -48,6 +43,30 @@ AD_PERMISSIONS = {
     "android.permission.ACCESS_ADSERVICES_TOPICS",
 }
 NAME, VALUE = 0x01010003, 0x01010024
+
+# UnityConnectSettings, decoded with UnityPy 1.25.0 from Global 3.7.1.
+# Only UnityAnalyticsSettings.m_Enabled and .m_InitializeOnStartup change;
+# shared services, purchasing, ads and reporting settings retain their values.
+# Hash the whole serialized file so the offsets cannot target another build.
+UNITY_SETTINGS = "assets/bin/Data/globalgamemanagers"
+UNITY_SETTINGS_ORIGINAL = "3b7c1fee129931a7baa8a66de1961bdfb40cb2e4279897645a58229c3d0295d6"
+UNITY_SETTINGS_PATCHED = "07b4133ba2a75df8d5744592cdd89316face11899b313b6ea64e24defdfcf5d2"
+UNITY_ANALYTICS_OFFSETS = (20495228, 20495230)
+
+
+def patch_unity_settings(data):
+    """Disable native Unity analytics before the engine initializes it."""
+    digest = hashlib.sha256(data).hexdigest()
+    if digest == UNITY_SETTINGS_PATCHED:
+        return bytes(data)
+    if digest != UNITY_SETTINGS_ORIGINAL:
+        raise ValueError("Unsupported game data: expected Global 3.7.1 UnityConnectSettings")
+    result = bytearray(data)
+    for offset in UNITY_ANALYTICS_OFFSETS:
+        result[offset] = 0
+    if hashlib.sha256(result).hexdigest() != UNITY_SETTINGS_PATCHED:
+        raise ValueError("Unexpected Unity analytics settings patch result")
+    return bytes(result)
 
 
 def _registration(name):

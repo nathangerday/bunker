@@ -12,7 +12,7 @@ from privacy import POLICY_VERSION
 
 # Bump when a release changes how the game itself is patched (its library,
 # metadata, master data or manifest edits): such an update needs the web builder.
-GAME_PATCH = 3
+GAME_PATCH = 4
 VERSION_ENTRY = "assets/lunar/bunker-version.txt"
 
 
