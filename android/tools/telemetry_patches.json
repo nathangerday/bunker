@@ -2,106 +2,10 @@
   "client": "Global 3.7.1 ARM64",
   "sites": [
     {
-      "name": "Unity Analytics service disabled",
-      "rva": 86712628,
-      "original": "00e04139c0035fd6f44fbea9fd7b01a9",
-      "replacement": "00008052c0035fd6"
-    },
-    {
       "name": "Unity Analytics startup",
       "rva": 86706468,
       "original": "ff8302d1fc6f04a9fa6705a9f85f06a9",
       "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity Analytics tick",
-      "rva": 86707452,
-      "original": "f85fbca9f65701a9f44f02a9fd7b03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity Analytics flush",
-      "rva": 86704404,
-      "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity Analytics new player event",
-      "rva": 86704044,
-      "original": "f85fbca9f65701a9f44f02a9fd7b03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity Analytics game ended event",
-      "rva": 86708000,
-      "original": "f85fbca9f65701a9f44f02a9fd7b03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity Analytics purchase event",
-      "rva": 86715116,
-      "original": "fc67bba9f85f01a9f65702a9f44f03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity Analytics failed purchase event",
-      "rva": 86716200,
-      "original": "fc67bba9f85f01a9f65702a9f44f03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Unity consent given",
-      "rva": 86746660,
-      "original": "f30f1ef8fd7b01a9fd430091f30300aa",
-      "replacement": "00008052c0035fd6"
-    },
-    {
-      "name": "Unity named consent given",
-      "rva": 86746852,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "00008052c0035fd6"
-    },
-    {
-      "name": "Unity consent denied",
-      "rva": 86746980,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "20008052c0035fd6"
-    },
-    {
-      "name": "Unity legacy analytics initialized",
-      "rva": 88004880,
-      "original": "f30f1ef8fd7b01a9fd430091b32d01f0",
-      "replacement": "00008052c0035fd6"
-    },
-    {
-      "name": "Unity legacy transaction",
-      "rva": 88004932,
-      "original": "e80f1bfcf85f01a9f65702a9f44f03a9",
-      "replacement": "40008052c0035fd6"
-    },
-    {
-      "name": "Unity legacy named event",
-      "rva": 88005060,
-      "original": "f44fbea9fd7b01a9fd430091b42d01f0",
-      "replacement": "40008052c0035fd6"
-    },
-    {
-      "name": "Unity legacy custom event",
-      "rva": 88005124,
-      "original": "f44fbea9fd7b01a9fd430091b42d01f0",
-      "replacement": "40008052c0035fd6"
-    },
-    {
-      "name": "Firebase collection argument",
-      "rva": 87983284,
-      "original": "f303002ae8000037c8fc00d0081544f9",
-      "replacement": "13008052"
-    },
-    {
-      "name": "Firebase native collection argument",
-      "rva": 87983484,
-      "original": "f303002a680200b5ac3300b0806140fd",
-      "replacement": "13008052"
     },
     {
       "name": "Crashlytics initialization",
@@ -128,36 +32,6 @@
       "replacement": "c0035fd6"
     },
     {
-      "name": "Facebook activation event",
-      "rva": 65814488,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Facebook custom event",
-      "rva": 65775164,
-      "original": "f657bda9f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Facebook decimal purchase event",
-      "rva": 65815020,
-      "original": "ff0301d1e80b00fdf50f00f9f44f02a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Facebook float purchase event",
-      "rva": 65815188,
-      "original": "e80f1dfcf50700f9f44f01a9fd7b02a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Facebook version event",
-      "rva": 65815476,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
       "name": "Facebook Android event",
       "rva": 79665212,
       "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
@@ -176,171 +50,15 @@
       "replacement": "c0035fd6"
     },
     {
-      "name": "IronSource initialization",
-      "rva": 53026340,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource ad unit initialization",
-      "rva": 53026536,
-      "original": "f657bda9f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource user ID",
-      "rva": 53026144,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "IronSource metadata",
-      "rva": 53025940,
-      "original": "f657bda9f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Offline rewarded video availability",
-      "rva": 53026920,
-      "original": "f44fbea9fd7b01a9fd430091f43702b0",
-      "replacement": "20008052c0035fd6"
-    },
-    {
-      "name": "IronSource integration diagnostic",
-      "rva": 53025564,
-      "original": "f44fbea9fd7b01a9fd430091f43702d0",
-      "replacement": "c0035fd6"
-    },
-    {
       "name": "Adjust automatic startup",
       "rva": 66985920,
       "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
       "replacement": "c0035fd6"
     },
     {
-      "name": "Adjust lifecycle",
-      "rva": 66986832,
-      "original": "f44fbea9fd7b01a9fd430091b4cd01d0",
-      "replacement": "c0035fd6"
-    },
-    {
       "name": "Adjust startup",
       "rva": 66986716,
       "original": "f44fbea9fd7b01a9fd430091b4cd01d0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android startup",
-      "rva": 66987520,
-      "original": "ff0302d1fa6703a9f85f04a9f65705a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust event",
-      "rva": 66992144,
-      "original": "f44fbea9fd7b01a9fd430091b4cd01b0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android event",
-      "rva": 66992260,
-      "original": "ff8301d1fa6701a9f85f02a9f65703a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust enable",
-      "rva": 66993544,
-      "original": "f44fbea9fd7b01a9fd430091b4cd01b0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android enable",
-      "rva": 66993644,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust enabled status",
-      "rva": 66993912,
-      "original": "f30f1ef8fd7b01a9fd430091b3cd01b0",
-      "replacement": "00008052c0035fd6"
-    },
-    {
-      "name": "Adjust Android enabled status",
-      "rva": 66994004,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "00008052c0035fd6"
-    },
-    {
-      "name": "Adjust package upload",
-      "rva": 66996260,
-      "original": "f30f1ef8fd7b01a9fd430091b3cd0190",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android package upload",
-      "rva": 66996352,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust ad revenue",
-      "rva": 66999512,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android ad revenue",
-      "rva": 66999628,
-      "original": "f70f1cf8f65701a9f44f02a9fd7b03a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust subscription",
-      "rva": 67000136,
-      "original": "f44fbea9fd7b01a9fd43009194cd01f0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android subscription",
-      "rva": 67000236,
-      "original": "ff8301d1fa6701a9f85f02a9f65703a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust third party sharing",
-      "rva": 67001588,
-      "original": "f44fbea9fd7b01a9fd43009194cd01f0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android third party sharing",
-      "rva": 67001688,
-      "original": "ff0303d1fc6f06a9fa6707a9f85f08a9",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust measurement consent",
-      "rva": 67002840,
-      "original": "f44fbea9fd7b01a9fd43009194cd01d0",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android measurement consent",
-      "rva": 67002940,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android pause",
-      "rva": 66986960,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
-      "replacement": "c0035fd6"
-    },
-    {
-      "name": "Adjust Android resume",
-      "rva": 66987240,
-      "original": "f50f1df8f44f01a9fd7b02a9fd830091",
       "replacement": "c0035fd6"
     }
   ]
