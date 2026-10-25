@@ -1,5 +1,92 @@
 # Validation
 
+## Offline Android shop — 2026-10-25
+
+- `android/tools/offline_shop.py` patches the original ARM64 3.7.1 client after
+  lunar-scripts. `CreatePurchaseTransaction` already grants rewards locally and
+  treats platform payments as free. The client now returns success only after
+  that RPC succeeds, sends the normal `ConnectingOutParameter`, and completes
+  its existing async result. It skips store initialization (including forced
+  retries), receipt creation and Google billing. Gem/consumable exchange prices
+  and the server's existing shop rules are unchanged.
+- Price lookup uses `MPlatformPaymentPrice` and the game's normal fallback
+  formatter. The fallback's Decimal-to-int conversion is skipped to retain cents.
+  This preserves bundled prices; it cannot retrieve historical regional prices
+  that existed only in Google's store catalog.
+- Eight shop tests passed against the player's original library, including Unicorn
+  ARM64 execution of the success and server-refusal branches, every initialized /
+  forced-initialization combination, and fractional Decimal values. The patch
+  also accepts the pinned upstream patches, is idempotent, maps executable ELF
+  segments correctly and rejects unexpected instructions before modifying input.
+  The pack callers' overflow dialog accepts null via `IsNullOrEmpty`; overflow
+  rewards continue to use the server's gift box.
+- The second APK also disables the Android SDK initializer and blocks checkout
+  even if a store controller already exists. ARM64 execution tests cover both
+  null and non-null controllers. Binary manifest tests confirm removal of the
+  billing permission and both checkout activities while preserving unrelated
+  components; APK builders and the on-device updater apply the same removal.
+- The complete library/metadata patch pipeline passed using the original APK.
+  All 14 Android update/manifest/signing tests passed with the locally
+  available game and companion APKs; build-info and web dependency tests passed.
+  `GAME_PATCH` is now 5 so an ordinary launcher-only update cannot retain the old
+  game code. This marker is shared by the Android and iOS release bundles.
+- The initial phone reports came from the old installed app: the attempted
+  updates had failed. USB inspection found Bunker 1.3.0 with game patch 1 and
+  the standard Bunker signing certificate, while the earlier shop artifacts
+  used a different local privacy certificate. The iOS purchase code was not changed.
+- `artifacts/bunker-offline-shop-v2.apk` passed APK v2 signature verification and
+  16 KB ZIP alignment, and installed over the first APK in an isolated Android
+  11 emulator session. The installed APK's SHA-256 matched the delivered file.
+  Two purchases through the Gem Shop both displayed `Purchase complete` with
+  no error dialog: balance 0 -> 555 -> 1110 (740 paid, 370 free), remaining stock
+  3 -> 2 -> 1. After force-stopping the game, SQLite retained those balances and
+  purchase count 2, and passed integrity checking. Prices displayed the bundled
+  yen amounts. This does not reproduce a physical phone with working Play billing.
+  The emulator session was read-only and discarded; original saves were untouched.
+- `artifacts/bunker-1.3.0-shop-screen.apk` applies the shop patch directly to the
+  phone's installed Bunker 1.3.0 APK, preserving its other content. It also
+  incorporates the screen-awake DisplayPatch change from commit `0dea6b4`.
+  Comparing disassembled launcher DEX before and after found only DisplayPatch
+  class changes among 118 classes. APK signature and 16 KB alignment checks
+  passed. The standard Bunker signing certificate matches the installed app.
+  Installing with `adb install -r` on the S26 Ultra succeeded without clearing
+  data, and the installed APK SHA-256 matches the built artifact. The original
+  first-install timestamp was preserved. After launching Unity, Android reports
+  game-window flags `0x80810580`, including `FLAG_KEEP_SCREEN_ON` (`0x80`).
+  Physical-phone purchase confirmation and sustained idle-screen testing remain
+  outstanding.
+
+Reproduce the binary checks with an original (unpatched) library and Unicorn:
+
+```sh
+python -m pip install unicorn==2.1.4
+BUNKER_GAME_LIB=/path/to/libil2cpp.so python -m unittest discover -s android/tools -p test_offline_shop.py -v
+```
+
+### Offline regional price display
+
+- The user chose fixed conversions of EUR 0.0057 and USD 0.0064 per JPY.
+  `ShopPrices.java` uses the Android locale's region to choose EUR or USD;
+  other currencies and language-only locales keep JPY. Formatting uses the same
+  locale, with half-up rounding to two decimals for EUR/USD. Values represent
+  conversions of bundled yen amounts, not historical regional store prices.
+- `shop_prices.c` replaces only `ShopUtility.GetPlatformPriceString` after
+  checking its original ARM64 instructions. It passes the full 96-bit Decimal
+  to Java without floating-point conversion and returns a managed UTF-16 string.
+  Existing nonempty platform price strings pass through. Actual transaction
+  amounts, inventory rewards and the offline completion patch are unchanged.
+- Nineteen JVM checks passed: France, Germany, US, French-US region selection,
+  unsupported-region fallback, decimal decoding/sign, the full 96-bit range,
+  zero, exact conversion and half-up ties. Native compilation with warnings as
+  errors, APK signature verification and 16 KB ELF/ZIP alignment passed.
+- The regional-price APK installed over the combined shop/screen build on the
+  S26 Ultra. Installed-file SHA-256 matches, and its Unity process logged that
+  the regional formatter was installed successfully. The actual Gem Shop shows
+  `2,11 €` for the JPY 370 tier and `57,00 €` for JPY 10,000, with the gem balance
+  still 1,530. No purchase was confirmed during display verification; the user
+  explicitly requested that no purchases be made. USD was verified by the JVM
+  checks, without changing the phone's locale.
+
 ## Arena against computer players — 2026-10-08
 
 - The server had no Arena support at all: none of the nine PvP calls, the

@@ -64,6 +64,7 @@ final class DisplayPatch {
         if (!result.isEmpty()) Log.w("Bunker", "Display settings not applied: " + result);
         else if (fps > 0) requestRefreshRate(context, fps);
         wrapWindows(context, full);
+        ShopPrices.install();
         if (fps == 0 && size == 0) {
             status.delete();  // Pod Programs reports on chosen settings only.
             return;

@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import axml  # noqa: E402
 import build_info  # noqa: E402
 import notice_pack  # noqa: E402
+import offline_shop  # noqa: E402
 from axml import Attr, Element  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -101,6 +102,7 @@ def patch_game_files(lib, metadata, port_offset=0):
         grpc, http = addresses(port_offset)
         run_cli(load("patch_apk", SCRIPTS / "android/patch_apk.py"), work, "--grpc-addr", grpc, "--http-addr", http)
         load("package_game", ROOT / "android/tools/package_game.py").patch_local_reachability(work)
+        load("offline_shop", ROOT / "android/tools/offline_shop.py").patch_game(work)
         return (work / LIB).read_bytes(), (work / METADATA).read_bytes()
 
 
@@ -175,7 +177,7 @@ def patch_manifest(game_manifest, companion_manifest, port_offset=0):
             if source.name == "provider":  # Authorities are unique per device: use the game's.
                 source.set(Attr.string("authorities", PACKAGE + ".lunar_loopback", AUTHORITIES))
             app.children.append(source)
-    return axml.serialize(doc), game_activity
+    return offline_shop.disable_billing_manifest(axml.serialize(doc)), game_activity
 
 
 class ApkWriter:

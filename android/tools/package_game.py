@@ -19,6 +19,7 @@ import zipfile
 from assemble_apk import SDK_PROVIDERS, SDK_SWITCHES, patch_unity_connect
 import build_info
 import notice_pack
+import offline_shop
 
 NS = "http://schemas.android.com/apk/res/android"
 ET.register_namespace("android", NS)
@@ -69,9 +70,16 @@ def main():
     root=Path(__file__).resolve().parents[2]
     game=args.decoded_dir.resolve();output=args.output.resolve();output.parent.mkdir(parents=True,exist_ok=True)
     patch_local_reachability(game)
+    offline_shop.patch_game(game)
     settings=game/"assets/bin/Data/globalgamemanagers";settings.write_bytes(patch_unity_connect(settings.read_bytes()))
     manifest=game/"AndroidManifest.xml";tree=ET.parse(manifest);doc=tree.getroot();app=doc.find("application")
     if app is None: raise RuntimeError("Game manifest has no application")
+    for permission in list(doc.findall("uses-permission")):
+        if permission.get(attr("name")) == offline_shop.BILLING_PERMISSION:
+            doc.remove(permission)
+    for activity in list(app.findall("activity")):
+        if activity.get(attr("name")) in offline_shop.BILLING_ACTIVITIES:
+            app.remove(activity)
     package=doc.attrib["package"]
     old=app.find("meta-data[@"+attr("name")+"='org.veritr1x.bunker.GAME_ACTIVITY']")
     original=old.get(attr("value")) if old is not None else None

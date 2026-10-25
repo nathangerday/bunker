@@ -4,6 +4,18 @@ What changed in Bunker, newest first. Each day lists its changes by area.
 Commit ids are in brackets. A release's notes are the dated sections
 under its heading, down to the previous release.
 
+## Unreleased
+
+- Android: real-money shop purchases now complete after the local server grants
+  the rewards, instead of opening Google billing or reporting cancellation.
+  Bundled prices remain visible, including fractional amounts. Both APK builders
+  apply the fix; existing installations need a rebuilt APK (game patch 5).
+  Google billing initialization and checkout entry points are disabled, and the
+  APK no longer declares the billing permission or checkout activity.
+- Android: display offline shop prices in the device region's currency for EUR
+  and USD, with fixed rates of 0.0057 EUR and 0.0064 USD per JPY. Format locally
+  and round half-up to cents. Other currencies keep the original yen prices.
+
 ## 1.3.0 (2026-10-25)
 
 Bunker now runs on Windows, with keyboard controls. The music comes back

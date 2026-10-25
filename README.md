@@ -48,6 +48,11 @@ Run the game and its Lunar Tear server on the same phone or tablet, on Android o
   answer no longer fail. Shop purchases add their items to the inventory.
   If the game was closed during a download, reward icons that stayed blank are
   downloaded again.
+- **Offline Android shop**: real-money gem packs and items complete through the
+  local server from the in-game menu, with no Google payment. Bundled yen prices
+  display in euros or US dollars for matching device regions, using fixed rates
+  of EUR 0.0057 and USD 0.0064 per JPY; other regions retain yen. These are display
+  conversions, not historical store prices. This change needs a rebuilt APK.
 - **Game Mode**: the app tells the system it is a game, so iOS Game Mode and Android's Game Mode and
   Game Dashboard work with it.
 - **Light and dark**: follows the device, or choose one in ⋮ → Display.
