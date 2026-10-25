@@ -1,0 +1,84 @@
+name: Privacy 4308941 build validation
+on:
+  push:
+    branches: [test/privacy-4308941]
+permissions:
+  contents: read
+jobs:
+  android:
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: [standard, emulator]
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: 4308941c0a5625276d0674590669e5ee72876699
+          submodules: recursive
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.25.8'
+          cache: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: arduino/setup-protoc@v3
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Install dependencies
+        run: |
+          python -m pip install pycryptodome==3.21.0 msgpack==1.1.1 lz4==4.3.2
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018" >/dev/null
+      - name: Run tests and prepare sources
+        run: |
+          (cd scripts && python -m unittest test_version test_release_assets test_notices)
+          (cd android/tools && python -m unittest test_privacy test_update_apk test_build_info test_notice_pack)
+          (cd web && python -m unittest test_build_site)
+          python scripts/prepare.py
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.36.11
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.6.1
+          make -C server proto
+      - name: Apply existing emulator-only CPU workaround
+        if: matrix.variant == 'emulator'
+        run: |
+          git fetch --depth=1 origin 84991281085246c4d87a36f0df2fa03532c9f7a2
+          git show 8499128:android/tools/go_cpu_overlay.py > android/tools/go_cpu_overlay.py
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+          path = Path('android/app/src/main/java/org/veritr1x/bunker/NativeBridge.java')
+          old = subprocess.check_output(['git', 'show', '8499128:' + path.as_posix()], text=True)
+          replacement = old[old.index('    static {'):old.index('    private NativeBridge')]
+          source = path.read_text()
+          needle = '    static { System.loadLibrary("lunar"); }\n'
+          assert source.count(needle) == 1
+          path.write_text(source.replace(needle, replacement))
+          PY
+          echo "GOFLAGS=-overlay=$(python android/tools/go_cpu_overlay.py)" >> "$GITHUB_ENV"
+      - name: Build native libraries and launcher
+        run: |
+          android/tools/build_native.sh
+          cd android
+          ./gradlew --no-daemon assembleDebug lintDebug
+      - name: Verify packaged tools against source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import io, zipfile
+          with zipfile.ZipFile('android/app/build/outputs/apk/debug/app-debug.apk') as apk:
+              with zipfile.ZipFile(io.BytesIO(apk.read('assets/chaquopy/app.imy'))) as app:
+                  for name in ('privacy.py', 'telemetry_patches.json', 'assemble_apk.py', 'build_info.py', 'axml.py', 'notice_pack.py', 'apk_sign.py'):
+                      assert app.read('bunker_tools/' + name) == (Path('android/tools') / name).read_bytes(), name
+          print('All seven packaged update-tool files match source byte for byte.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: privacy-4308941-${{ matrix.variant }}
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14
