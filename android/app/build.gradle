@@ -29,7 +29,8 @@ android {
         targetSdk = 36
         // Bunker's version (scripts/version.py), shown in About and the exported log.
         // The installed app keeps the game's own version, 3.7.1.
-        def bunkerVersion = providers.exec { commandLine 'python3', "${rootDir}/../scripts/version.py" }.standardOutput.asText.get().trim()
+        def versionPython = System.getProperty('os.name').startsWith('Windows') ? 'python' : 'python3'
+        def bunkerVersion = providers.exec { commandLine versionPython, "${rootDir}/../scripts/version.py" }.standardOutput.asText.get().trim()
         versionCode = 1
         versionName = bunkerVersion
         buildConfigField 'String', 'BUNKER_VERSION', "\"${bunkerVersion}\""

@@ -133,7 +133,8 @@ final class DisplayPatch {
 
     /**
      * Wraps the callback of each of the game's windows, for the keyboard
-     * controls (Keyboard) and, when full is set, the screen area.
+     * controls (Keyboard), keeping the screen awake and, when full is set,
+     * the screen area.
      *
      * The game was built without Unity's "render outside safe area", so in
      * landscape Android leaves the camera cutout's whole edge black. Drawing
@@ -149,7 +150,7 @@ final class DisplayPatch {
                 Window window = activity.getWindow();
                 if (window.getCallback() instanceof GameWindow) return;
                 window.setCallback(new GameWindow(window.getCallback(), activity, full));
-                if (full) window.setAttributes(window.getAttributes());
+                window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
             @Override public void onActivityResumed(Activity activity) {}
             // Before the pause starts: the game can take seconds to pause, and
@@ -169,7 +170,7 @@ final class DisplayPatch {
         });
     }
 
-    /** The activity's window callback: keyboard controls, and the window around the camera cutout. */
+    /** The activity's window callback: keyboard controls, screen timeout and camera cutout. */
     private static final class GameWindow implements Window.Callback {
         private final Window.Callback base;
         private final boolean shortEdges;
@@ -181,6 +182,9 @@ final class DisplayPatch {
         }
 
         @Override public void onWindowAttributesChanged(WindowManager.LayoutParams attrs) {
+            // Unity can reset its sleep timeout during a scene. Keep quiet scenes and
+            // cinematics awake too; Android ignores this flag while the window is hidden.
+            attrs.flags |= WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON;
             if (shortEdges) attrs.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
             base.onWindowAttributesChanged(attrs);
         }
