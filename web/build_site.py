@@ -25,6 +25,7 @@ PYTHON = [
     "android/tools/build_info.py",
     "android/tools/notice_pack.py",
     "android/tools/package_game.py",
+    "android/tools/offline_shop.py",
     "ios/tools/package_ipa.py",
     "ios/python/bunker_ios_update.py",
     "ios/tools/remain_days.py",

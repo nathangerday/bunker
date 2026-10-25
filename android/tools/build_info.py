@@ -11,7 +11,8 @@ import re
 
 # Bump when a release changes how the game itself is patched (its library,
 # metadata, master data or manifest edits): such an update needs the web builder.
-GAME_PATCH = 1
+# 2 was also used by the existing local privacy build; keep this distinct.
+GAME_PATCH = 5
 VERSION_ENTRY = "assets/lunar/bunker-version.txt"
 
 

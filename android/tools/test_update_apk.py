@@ -145,6 +145,17 @@ class UpdateTests(unittest.TestCase):
 
 
 class ManifestTests(unittest.TestCase):
+    def test_rebuilt_manifest_disables_google_checkout(self):
+        import axml
+        import offline_shop
+        game, companion = manifests()
+        root = axml.parse(assemble_apk.patch_manifest(game, companion)[0]).root
+        self.assertNotIn(offline_shop.BILLING_PERMISSION,
+                         {p.get("name").raw for p in root.find_all("uses-permission")})
+        activities = {a.get("name").raw for a in root.find_all("application")[0].find_all("activity")}
+        self.assertFalse(activities & offline_shop.BILLING_ACTIVITIES)
+        self.assertIn("org.veritr1x.bunker.MainActivity", activities)
+
     def test_ad_and_analytics_libraries_stay_off(self):
         import axml
         game, companion = manifests()
